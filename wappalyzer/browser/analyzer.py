@@ -50,7 +50,6 @@ class DriverPool:
                 options.set_preference("general.useragent.override", 
                     "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0")
                 options.add_argument("--headless")
-                
                 driver = webdriver.Firefox(options=options)
                 driver.install_addon(self.xpi_path, temporary=True)
                 driver.maximize_window()
@@ -138,11 +137,15 @@ def process_url(driver, url):
         
         driver.get(url)
         
-        for i in range(5):
+        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        WebDriverWait(driver, 6).until(
+            lambda driver: driver.execute_script('return document.readyState') == 'complete'
+        )
+        for i in range(10):
             driver.switch_to.window(main_tab)
             driver.execute_script("window.scrollTo(0, Math.random() * 1000)")
             driver.execute_script("var event = new MouseEvent('mousemove', { 'view': window, 'bubbles': true, 'cancelable': true, 'clientX': Math.random() * window.innerWidth, 'clientY': Math.random() * window.innerHeight }); document.dispatchEvent(event);")
-            time.sleep(1)
+            time.sleep(3)
         
         # after 5 seconds, process the right-most tab
         current_handles = driver.window_handles
@@ -159,7 +162,7 @@ def process_url(driver, url):
                 
                 driver.close()
                 driver.switch_to.window(current_handles[0])
-                
+
                 return url, first_result['detections']
             
             driver.close()
