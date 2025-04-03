@@ -147,6 +147,7 @@ def process_url(driver, url):
             driver.execute_script("var event = new MouseEvent('mousemove', { 'view': window, 'bubbles': true, 'cancelable': true, 'clientX': Math.random() * window.innerWidth, 'clientY': Math.random() * window.innerHeight }); document.dispatchEvent(event);")
             time.sleep(3)
         
+        time.sleep(10)
         # after 5 seconds, process the right-most tab
         current_handles = driver.window_handles
         if len(current_handles) > 1:
